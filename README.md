@@ -1,5 +1,7 @@
 # Star Office UI
 
+[中文说明](README_CN.md)
+
 A tiny “pixel office” status UI for your AI assistant.
 
 - Pixel office background (top-down, customizable). **This repo includes a sample background (office_bg.png).**
@@ -8,7 +10,7 @@ A tiny “pixel office” status UI for your AI assistant.
 - **Optional Gateway logs + TUI status side panels (built-in).**
 - Mobile-friendly access via Cloudflare Tunnel quick tunnel.
 
-> Language: the demo code/docs are currently mainly in Chinese (中文). PRs welcome.
+> Language: English is the default. Chinese doc is in README_CN.md.
 
 ## What it looks like
 
@@ -89,10 +91,6 @@ You’ll get a `https://xxx.trycloudflare.com` URL.
 
 ## Security notes
 
-- Anyone with the tunnel URL can read `/status`.
-- Don’t put sensitive info in `detail`.
-- If needed, add a token check for `/status` (or only return coarse states).
-
-## License
-
-MIT
+- quick tunnel URL may change, no uptime guarantee
+- `/status` is public; don’t put secrets in detail
+- For privacy: add token / hide detail

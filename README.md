@@ -2,17 +2,27 @@
 
 A tiny “pixel office” status UI for your AI assistant.
 
-- Pixel office background (top-down)
-- A little character that moves between areas based on `state`
-- Optional speech bubble / typing effect
-- Mobile-friendly access via Cloudflare Tunnel quick tunnel
+- Pixel office background (top-down, customizable). **This repo includes a sample background (office_bg.png).**
+- Avatar switches animations (walking/rushing/alert) based on `state`.
+- Optional speech bubble / typing effect.
+- **Optional Gateway logs + TUI status side panels (built-in).**
+- Mobile-friendly access via Cloudflare Tunnel quick tunnel.
 
 > Language: the demo code/docs are currently mainly in Chinese (中文). PRs welcome.
 
 ## What it looks like
 
-- `idle / syncing / error` → breakroom area
-- `writing / researching / executing` → desk area
+![UI Preview](frontend/office_bg.png)
+
+**Added in this fork:**
+- Sample background image included
+- Gateway logs + TUI status side panels
+- Multiple avatar sprites + motion rules (walking/rushing/alert)
+
+- `idle / syncing` → breakroom area
+- `writing / researching` → desk area
+- `executing` → execution area
+- `error` → alert area
 
 The UI polls `/status` and renders the assistant avatar accordingly.
 

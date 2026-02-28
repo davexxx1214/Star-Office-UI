@@ -3,7 +3,11 @@ import os, time, json
 from datetime import datetime
 
 STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "state.json")
-SESSIONS_DIR = os.path.expanduser("~/.openclaw/agents/main/sessions")
+SESSIONS_DIR_CANDIDATES = [
+    os.path.expanduser("~/.nanobot/sessions"),
+    os.path.expanduser("~/.nanobot/agents/main/sessions"),
+    os.path.expanduser("~/.openclaw/agents/main/sessions"),  # legacy fallback
+]
 CHECK_INTERVAL = 5  # seconds
 ACTIVE_WINDOW = 20  # seconds
 
@@ -32,18 +36,19 @@ def save_state(state):
 
 def latest_session_mtime():
     latest = 0
-    if not os.path.isdir(SESSIONS_DIR):
-        return 0
-    for name in os.listdir(SESSIONS_DIR):
-        if not name.endswith(".jsonl"):
+    for sessions_dir in SESSIONS_DIR_CANDIDATES:
+        if not os.path.isdir(sessions_dir):
             continue
-        path = os.path.join(SESSIONS_DIR, name)
-        try:
-            mtime = os.path.getmtime(path)
-            if mtime > latest:
-                latest = mtime
-        except Exception:
-            pass
+        for name in os.listdir(sessions_dir):
+            if not name.endswith(".jsonl"):
+                continue
+            path = os.path.join(sessions_dir, name)
+            try:
+                mtime = os.path.getmtime(path)
+                if mtime > latest:
+                    latest = mtime
+            except Exception:
+                pass
     return latest
 
 

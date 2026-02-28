@@ -5,6 +5,7 @@ from flask import Flask, jsonify, send_from_directory, request
 from datetime import datetime
 import json
 import os
+import shutil
 import subprocess
 
 # Paths
@@ -80,13 +81,27 @@ def save_state(state: dict):
         json.dump(state, f, ensure_ascii=False, indent=2)
 
 
-def run_cmd(cmd):
+def run_cmd(cmd, timeout=6):
     try:
-        res = subprocess.run(cmd, shell=True, check=False, capture_output=True, text=True, timeout=6)
+        res = subprocess.run(cmd, shell=True, check=False, capture_output=True, text=True, timeout=timeout)
         out = (res.stdout or "") + ("\n" + res.stderr if res.stderr else "")
         return out.strip()
     except Exception as e:
         return f"[error] {e}"
+
+
+def command_exists(cmd: str) -> bool:
+    parts = cmd.strip().split()
+    if not parts:
+        return False
+    return shutil.which(parts[0]) is not None
+
+
+def run_cmd_candidates(cmds, timeout=10):
+    for cmd in cmds:
+        if command_exists(cmd):
+            return run_cmd(cmd, timeout=timeout)
+    return "[error] 未找到可用命令。请先安装并配置 nanobot（或兼容的 openclaw）到 PATH。"
 
 
 # Initialize state
@@ -130,15 +145,28 @@ def set_state():
 
 @app.route("/gateway_logs", methods=["GET"])
 def gateway_logs():
-    """Fetch gateway logs"""
-    text = run_cmd("openclaw logs --limit 120 --plain --no-color --timeout 8000")
+    """Fetch gateway status for nanobot"""
+    text = run_cmd_candidates(
+        [
+            "nanobot channels status",
+            "nanobot status",
+            "openclaw logs --limit 120 --plain --no-color --timeout 8000",
+        ],
+        timeout=10,
+    )
     return jsonify({"text": text})
 
 
 @app.route("/tui", methods=["GET"])
 def tui():
     """Fetch TUI/status output"""
-    text = run_cmd("openclaw status --deep")
+    text = run_cmd_candidates(
+        [
+            "nanobot status",
+            "openclaw status --deep",
+        ],
+        timeout=10,
+    )
     return jsonify({"text": text})
 
 
